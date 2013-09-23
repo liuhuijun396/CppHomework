@@ -1,0 +1,16 @@
+#include "iostream"
+
+using namespace std;
+//忽略了参数检查,x的y次 幂,且y>0
+long  my_power(long x ,long y){
+       if(y==0) return 1;
+       else return x*my_power(x,y-1);
+}
+
+int main(){
+    cout<<my_power(5,3)<<endl;
+    system("pause");
+    return 0;   
+}
+
+
