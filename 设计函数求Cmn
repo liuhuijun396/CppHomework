@@ -1,0 +1,23 @@
+#include "iostream"
+
+using namespace std;
+//Cmn的组合
+long combination(long m, long n){
+      long div=1,divd=1;
+      if(n>m)
+         cout<<"n不能大于m"<<endl;
+      if(n>m/2)
+         return combination(m,m-n);
+      else {
+         for(int i=m;i>=m-n+1;i--)
+             div *= i;
+         for(int i=n;i>=1;i--)
+             divd *=i;
+         return div/divd;    
+      }
+     }
+int main(){
+    cout<<combination(5,3)<<endl;
+    system("pause");
+    return 0;   
+}
