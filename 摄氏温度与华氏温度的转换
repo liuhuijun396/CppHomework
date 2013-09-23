@@ -1,0 +1,21 @@
+#include "iostream"
+
+using namespace std;
+//华氏温度到摄氏温度 
+float fahrenheit_to_centigrade(float fahrenheit){
+         float centigrade = 0.0;
+         centigrade = 5.0/9.0* (fahrenheit-32);
+         return centigrade;
+      }
+float centigrade_to_fahrenheit(float centigrade){
+         float fahrenheit = 0.0;
+         fahrenheit = centigrade*9.0/5.0 + 32;
+         return fahrenheit;
+      }
+//摄氏温度到华氏温度 
+int main(){
+    cout<<fahrenheit_to_centigrade(96)<<endl;
+    cout<<centigrade_to_fahrenheit(35.556)<<endl;
+    system("pause");
+    return 0;   
+}
