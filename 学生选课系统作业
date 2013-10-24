@@ -1,0 +1,292 @@
+#include<iostream>
+#include<string>
+#include<list>
+using namespace std;
+
+/*
+* 课程类  包括:课程ID、课程名称、所得分数  以及3种属性的get()、set()方法
+*/ 
+class course{
+      private:
+              int courseId; 
+              string courseName;
+              int courseGrade;
+      public:
+             course(){}
+             course(int courseId,string courseName){
+                        this->courseId = courseId;
+                        this->courseName = courseName;
+                        this->courseGrade = 0;
+                      }
+             void setCourseId(int courseId){
+                     this->courseId = courseId;
+                  }
+             int getCourseId(){
+                     return this->courseId;
+                 }
+             void setCourseName(string courseName){
+                     this->courseName = courseName;
+                  }
+             string getCourseName(){
+                     return this->courseName;
+                 }
+             void setCourseGrade(int courseGrade){
+                     this->courseGrade = courseGrade;
+                  }
+             int getCourseGrade(){
+                 return this->courseGrade;
+                 }              
+      };
+/*  
+*  学生信息类  包括:学号、姓名、所选课程集合LIST  以及3种属性的get()、set()方法 
+*  bool addCourse()  学生选课 
+*  bool deletCourse()  学生退课 
+*/ 
+class studentInfo{
+       private: 
+                int num; //学号 
+                string name; // 姓名 
+                list<course *> *courses; //所选课程链表 
+       public: 
+               studentInfo(){
+                           this->num = 1;
+                           this->name = "xxxx";
+                           this->courses = new list<course *>();
+               }
+               studentInfo(int num , string name){
+                               this->num = num;
+                               this->name = name;
+                               this->courses = new list<course *>();
+              }
+              void setNum(int num){
+                    this->num = num;
+                   }
+              int getNum(){
+                    return this->num;
+                  }
+              void setName(string name){
+                    this->name = name;
+                   }
+              string getName(){
+                    return this->name;
+                  }
+              void setCourses(list<course *> *courses){
+                    this->courses =  courses;
+                   }
+              list<course *> * getCourses(){
+                    return this->courses;
+                  }
+              bool addCourse(course* coursePointer){
+                     try{
+                      this->courses->push_back(coursePointer);
+                         return true;
+                     }catch(list<course *> * e){
+                          cout<<"学生所选课程库发生异常";
+                          return false; 
+                              }        
+                   }
+            bool deleteCourse(course * coursePointer){
+                     try{ 
+                          list<course *>::iterator i ;
+                          course * temp ;
+                          for(i = this->courses->begin();i != this->courses->end();++i ){
+                                if((*i)->getCourseId() == coursePointer->getCourseId()){
+                                  temp = * i ;
+                                  //this->courses->remove(temp);   迭代器问题 
+                                  }
+                             } 
+                            this->courses->remove(temp); 
+                           cout<<"success";  
+                          return true; 
+                     }catch (list<course *> * e){
+                          cout<<"学生所选课程库发生异常";
+                          return false; 
+                     }             
+                   }                     
+              ~studentInfo(){
+              }
+       };
+// 初始化学生信息链表 
+list<studentInfo *> * initStInfoList();
+//打印某个学生的信息，成功返回true 
+bool printStdInfo(studentInfo *std);
+//查看某个链表中的所有学生信息 
+void lookStudentInfo(list<studentInfo *> *L); 
+// 初始化课程库链表 
+list<course *> * initCourseList(); 
+//根据学号获取学生，成功返回一个指针，错误返回null 
+studentInfo * getStdInfoByNum(list<studentInfo *> *L,int tempNum); 
+//根据课程号获取课程，成功返回一个指针，错误返回null 
+course * getCourseById(list<course *> *L,int courseId); 
+//打印某个链表中的课程信息，错误是返回null 
+bool printCourse(list<course *> * L);  
+
+
+int main(){
+    cout<<"正在初始化学生信息库、课程库...."<<endl;
+    list<studentInfo *>* stdList = initStInfoList();
+    list<studentInfo *>::iterator editGare;
+    list<course *> * courList =  initCourseList();
+    if(stdList)
+       cout<<"初始化成功..."<<endl;
+    char option = 'x';
+    while(1){
+       if(option == '0')
+          break;
+       cout<<"系统功能如下："<<endl;
+       cout<<"\t1--查看所有学生信息";
+       cout<<"\t2--学生选课";
+       cout<<"\t3--学生退课";
+       cout<<"\t4--录入学生成绩"<<endl;
+       cout<<"\t0--退出系统"<<endl;
+       cout<<"请选择..."<<endl;  
+       cin>>option;
+       int tempNum = 0;
+       studentInfo * stdPoint;
+       int courId = 0;
+       course * courPoint;
+       bool exit = false;
+       int grade = 0 ;
+       switch(option){
+          case '0':
+               break;
+          case '1':
+               lookStudentInfo(stdList);
+               break;
+          case '2':
+               cout<<"请输入学号："<<endl;
+               cin>>tempNum; 
+               stdPoint = getStdInfoByNum(stdList,tempNum);
+               if(stdPoint){
+                  cout<<"该学生的信息如下：";
+                  printStdInfo(stdPoint); 
+                  printCourse(courList);
+                  cout<<"请选择课程号.."<<endl;
+                  cin>>courId;
+                  courPoint = getCourseById(courList,courId);
+                  if(courPoint){
+                     if(stdPoint->addCourse(courPoint)){     
+                         cout<<"----------选课成功----------"<<endl;      
+                         printStdInfo(stdPoint); 
+                     }
+                     else cout<<"----------选课失败----------"<<endl; 
+                  }
+               }
+               else cout<<"***********学生不存在************"<<endl; 
+               break;
+          case '3':
+               cout<<"请输入学号："<<endl;
+               cin>>tempNum; 
+               stdPoint = getStdInfoByNum(stdList,tempNum);
+               if(stdPoint){
+                  cout<<"该学生的信息如下：";
+                  printStdInfo(stdPoint); 
+                  printCourse(courList);
+                  cout<<"请选择课程号.."<<endl;
+                  cin>>courId;
+                  courPoint = getCourseById(courList,courId);
+                  if(courPoint){
+                      if(stdPoint->deleteCourse(courPoint)){ 
+                      cout<<"----------退课成功----------"<<endl; 
+                      printStdInfo(stdPoint); 
+                      }
+                      else cout<<"----------退课失败----------"<<endl;  
+                 }
+               }
+               else cout<<"***********学生不存在************"<<endl;
+               break;
+          case '4':
+               cout<<"********************正在使用成绩录入系统*****************************"<<endl;
+               for(editGare = stdList->begin();editGare != stdList->end();++editGare){
+                   printStdInfo(*editGare);
+                   if(printCourse((*editGare)->getCourses())){
+                       cout<<"请选择课程号.."<<endl;
+                       cin>>courId;
+                       courPoint = getCourseById((*editGare)->getCourses(),courId);
+                       if(courPoint){
+                          cout<<"请输入课程分数："; 
+                          cin>>grade;
+                          courPoint->setCourseGrade(grade); 
+                       }
+                   }
+                   system("pause");
+               }
+          default:
+               option='x';  
+               break;
+       } 
+    }
+    return 0 ;
+    }
+/*
+* 课程类  包括:课程ID、课程名称、所得分数  以及3种属性的get()、set()方法
+*/ 
+void lookStudentInfo(list<studentInfo *> *L){
+         if(L->size()>=1){
+              list<studentInfo *>::iterator i ;
+              for(i = L->begin();i!=L->end();++i)
+                   printStdInfo(*i);          
+         }          
+     }
+list<studentInfo *> * initStInfoList(){
+        list<studentInfo *> * LPointer= new list<studentInfo *>();
+        LPointer->push_back(new studentInfo(20120001,"test01"));
+        LPointer->push_back(new studentInfo(20120002,"test02"));
+        LPointer->push_back(new studentInfo(20120003,"test03"));
+        return LPointer;
+     } 
+bool printStdInfo(studentInfo *std){
+           cout<<"姓名："<<std->getName();
+           cout<<"\t学号："<<std->getNum()<<endl; 
+           if(std->getCourses()->size()>=1){                         
+               cout<<"\t课程：";                            
+               list<course *>::iterator i;
+               for(i = std->getCourses()->begin();i!=std->getCourses()->end();++i)
+                   cout<<"\t"<<(*i)->getCourseName()<<": "<<(*i)->getCourseGrade()<<" 分";
+               cout<<endl;
+               return true; 
+           }
+           else {       
+              cout<<"\t\t未选任何课程"<<endl;
+              return false;
+           }
+     } 
+bool printCourse(list<course *> * L){
+           if(L->size()>=1){
+               cout<<"课程库如下："<<endl;                                      
+               list<course *>::iterator i;
+               for(i = L->begin();i!=L->end();++i)
+                   cout<<"\t"<<(*i)->getCourseName()<<":"<<(*i)->getCourseId();
+               cout<<endl;
+               return true;  
+           }
+           else{
+                 cout<<"课程库为空,不能执行退课或者录入成绩的操作"<<endl;
+                 return false;
+           }
+     } 
+list<course *> * initCourseList(){
+        list<course *> * LPointer= new list<course *>();
+        LPointer->push_back(new course(1001,"计算机"));
+        LPointer->push_back(new course(1002,"英语"));
+        LPointer->push_back(new course(1003,"微积分"));
+        return LPointer;
+     }
+studentInfo * getStdInfoByNum(list<studentInfo *> *L,int tempNum){
+               if(L->size()>=1){
+                 list<studentInfo *>::iterator i ;
+                 for(i = L->begin();i!=L->end();++i)
+                     if((*i)->getNum() == tempNum)  
+                       return *i;        
+         }
+               return 0;
+            } 
+course * getCourseById(list<course *> *L,int courseId){
+               if(L->size()>=1){
+                 list<course *>::iterator i ;
+                 for(i = L->begin();i!=L->end();++i)
+                     if((*i)->getCourseId() == courseId)  
+                       return *i;        
+                }
+               return 0;
+            } 
