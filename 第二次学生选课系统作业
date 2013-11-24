@@ -1,0 +1,377 @@
+#ifndef ADDSTUDENT_H
+#define ADDSTUDENT_H
+
+#include "MenuItem.h"
+
+#include "StuList.h"
+
+class AddStudent:public MenuItem{
+public:
+    AddStudent():MenuItem("Ñ¡¿Î"){}
+    virtual bool act(){
+                stuList.addStu();
+        return false;
+    }
+};
+
+#endif // ADDSTUDENT_H
+
+
+
+#ifndef DELSTUDENT_H
+#define DELSTUDENT_H
+
+#include "MenuItem.h"
+
+#include "StuList.h"
+
+class DelStu:public MenuItem{
+public:
+    DelStu():MenuItem("ÍËÑ¡"){}
+    bool act(){
+        stuList.delStu();
+        return false;
+    }
+};
+
+#endif // DELSTUDENT_H
+
+
+
+#ifndef LISTSTUDENTS_H
+#define LISTSTUDENTS_H
+
+#include "MenuItem.h"
+
+#include "StuList.h"
+
+class ListStudents:public MenuItem{
+public:
+    ListStudents():MenuItem("²é¿´Ñ§ÉúÃûµ¥"){}
+    bool act(){
+                stuList.list();
+        return false;
+    }
+};
+
+#endif // LISTSTUDENTS_H
+
+
+
+#ifndef MENU_H
+#define MENU_H
+
+#include <vector>
+
+#include "MenuItem.h"
+
+#include <vector>
+
+#include "MenuItem.h"
+class Menu{
+public:
+    virtual ~Menu();
+    void append(MenuItem* mi);
+    int run();
+private:
+    void show();
+    vector<MenuItem*> items;
+};
+
+#endif // MENU_H
+
+
+#ifndef MENUITEM_H
+#define MENUITEM_H
+
+#include <string>
+using namespace std;
+
+class MenuItem{
+public:
+    MenuItem(string c):caption(c){}
+    virtual ~MenuItem(){}
+    string getCaption(){
+        return caption;
+    }
+    virtual bool act() = 0; //if return true ,then exit program
+private:
+    string caption;
+};
+
+#endif // MENUITEM_H
+
+
+
+
+#ifndef STULIST_H
+#define STULIST_H
+
+#include <vector>
+using namespace std;
+
+#include "Student.h"
+
+class StuList{
+public:
+    virtual ~StuList();
+    void list();
+        void addStu();
+        void delStu();
+private:
+    vector<Student *> students;
+    
+        Student* find(Student* student);
+};
+
+extern StuList stuList;
+
+#endif // STULIST_H
+
+
+
+
+
+
+#ifndef STUMANAGER_H
+#define STUMANAGER_H
+
+#include "Menu.h"
+
+class StuManager{
+public:
+    StuManager();
+    int run();
+private:
+    Menu menu;
+};
+
+#endif // STUMANAGER_H
+
+
+
+
+
+#ifndef STUDENT_H
+#define STUDENT_H
+
+#include <string>
+using std::string;
+
+class Student
+{
+public:
+        void setId(string id){
+                this->id=id;
+        }
+    string getId(){
+        return this->id;
+    }
+    int getScore(){
+        return this->score;
+    }
+    void add(int score){
+        this->score=score;
+    }
+
+    bool equal(Student* other){
+        return this->id == other->id;
+    }
+    void input();
+        void show();
+    
+private:
+    string id;
+    int score;
+};
+
+#endif // STUDENT_H
+
+
+
+
+
+#ifndef EXIT_H
+#define EXIT_H
+
+#include <iostream>
+using namespace std;
+
+#include "MenuItem.h"
+
+class Exit:public MenuItem{
+public:
+    Exit():MenuItem("ÍË³ö³ÌÐò"){}
+    bool act(){
+        cout << "ÍË³ö³ÌÐò£¡" << endl;
+        return true;
+    }
+};
+
+#endif // EXIT_H
+
+
+
+
+
+#include "Menu.h"
+
+#include <iostream>
+using namespace std;
+
+Menu::~Menu(){
+    for(auto &item:items){
+        delete item;
+    }
+}
+
+void Menu::append(MenuItem* mi){
+    this->items.push_back(mi);
+}
+
+int Menu::run(){
+    int index;
+    while(1){
+        this->show();
+        cin>>index;
+                bool bool1=(index<1);
+                bool bool2=(index>items.size());
+        if(!cin ||bool1||bool2){
+            cout<<"错误的菜单项，请重新输入："<<endl;
+            if(!cin){
+                cin.clear();
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+            }
+            continue;
+        }
+        if(items[index-1]->act()) break;
+    }
+    return 0;
+}
+
+void Menu::show(){
+    int i=0;
+    for(auto &item:items){
+        cout<< ++i <<")" <<item->getCaption() <<endl;
+    }
+}
+
+
+
+
+#include "StuList.h"
+
+#include <iostream>
+using namespace std;
+
+StuList stuList;
+
+StuList::~StuList(){
+    for(auto &student: students){
+        delete student;
+    }
+}
+
+void StuList::list()
+{
+    cout<<"--------------欢迎进入查看系统！--------------"<<endl;
+    cout<<"学号\t"<<"分数"<<endl;
+    for(auto &item : students){
+                item->show();
+        }
+}
+
+void StuList::addStu(){
+    Student* temp = new Student;
+    temp->input();
+    
+    Student* result = this->find(temp);
+    if(result == NULL){
+        this->students.push_back(temp);
+    }else{
+                cout<<"学号重复！"<<endl;
+    }
+}
+
+void StuList::delStu(){
+    Student* temp = new Student;
+        string id;
+        cout<<"请输入学号：";
+    cin>>id;
+        temp->setId(id);
+    Student* result = this->find(temp);
+    if(result == NULL){
+        cout<<"学号不存在！"<<endl;
+    }else{
+                delete result;
+    }
+}
+
+Student* StuList::find(Student* student){
+        for(auto &item : students){
+                if(item->equal(student)){
+                        return item;
+                }
+        }
+        return NULL;
+}
+
+
+
+
+
+
+#include "StuManager.h"
+
+#include "ListStudents.h"
+#include "AddStudent.h"
+#include "DelStu.h"
+#include "Exit.h"
+
+#include <iostream>
+using namespace std;
+
+StuManager::StuManager(){
+    menu.append(new ListStudents());
+    menu.append(new AddStudent());
+        menu.append(new DelStu());
+    menu.append(new Exit());
+}
+
+int StuManager::run(){
+    return menu.run();
+}
+
+
+
+
+
+#include "Student.h"
+
+#include <iostream>
+using namespace std;
+
+void Student::input(){
+    cout<<"Ñ§ºÅ£º";
+    cin>>this->id;
+    
+    cout<<"·ÖÊý£º";
+    cin>>this->score;
+}
+
+void Student::show(){
+        cout<<this->id<<"\t"<<this->score<<endl;
+}
+
+
+
+
+
+#include "StuManager.h"
+
+int main(){
+        StuManager stuManager;
+    return stuManager.run();
+}
+
+
